@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -14,6 +14,12 @@ class SchedulerStack extends Stack {
     });
     const createOneTimeScheduleFunction = this.createCreateOneTimeScheduleFunction(props);
     this.createApiEndpoints({ api, functions: { createOneTimeScheduleFunction } });
+
+    // Outputs
+    new CfnOutput(this, 'HttpApiUrl', {
+      description: 'URL of the HTTP API',
+      value: api.apiEndpoint,
+    });
   }
 
   createCreateOneTimeScheduleFunction(props) {
