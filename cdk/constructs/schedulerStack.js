@@ -1,5 +1,6 @@
 import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -7,7 +8,9 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 class SchedulerStack extends Stack {
   constructor({ scope, id, props }) {
     super(scope, id, props);
+    const authorizer = new HttpIamAuthorizer();
     const api = new HttpApi(this, `${props.stageName}-${props.serviceName}`, {
+      defaultAuthorizer: authorizer,
       deployOptions: {
         stageName: props.stageName,
       },
