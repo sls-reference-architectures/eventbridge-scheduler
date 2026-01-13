@@ -7,7 +7,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint '**.*.js' --fix",
     "test": "npm run lint && npm run test:unit",
-    "test:unit": "POWERTOOLS_DEV=true POWERTOOLS_LOGGER_SAMPLE_RATE=1 npx jest unit.test",
+    "test:int": "npx jest --config jest.config.int.js",
+    "test:unit": "POWERTOOLS_DEV=true POWERTOOLS_LOGGER_SAMPLE_RATE=1 npx jest",
     "prepare": "husky"
   },
   "repository": {
@@ -28,6 +29,7 @@
     "@swc/core": "^1.15.7",
     "@swc/jest": "^0.2.39",
     "@types/aws-lambda": "^8.10.159",
+    "@types/jest": "^30.0.0",
     "aws-cdk": "^2.1100.1",
     "aws-cdk-lib": "^2.233.0",
     "constructs": "^10.4.4",
