@@ -2,6 +2,7 @@ import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
@@ -15,7 +16,14 @@ class SchedulerStack extends Stack {
         stageName: props.stageName,
       },
     });
+    // Functions
     const createOneTimeScheduleFunction = this.createCreateOneTimeScheduleFunction(props);
+    const executeOneTimeScheduleFunction = this.createExecuteOneTimeScheduleFunction(props);
+    // Roles
+    const invokeOneTimeScheduleRole = this.createInvokeOneTimeScheduleRole(
+      executeOneTimeScheduleFunction.functionArn,
+    );
+    // Endpoints
     this.createApiEndpoints({ api, functions: { createOneTimeScheduleFunction } });
 
     // Outputs
@@ -23,14 +31,57 @@ class SchedulerStack extends Stack {
       description: 'URL of the HTTP API',
       value: api.apiEndpoint,
     });
+    new CfnOutput(this, 'ExecuteOneTimeScheduleFunctionArn', {
+      description: 'ARN of the ExecuteOneTimeSchedule Lambda function',
+      value: executeOneTimeScheduleFunction.functionArn,
+    });
+    new CfnOutput(this, 'InvokeOneTimeScheduleRoleArn', {
+      description: 'ARN of the InvokeOneTimeSchedule IAM Role',
+      value: invokeOneTimeScheduleRole.roleArn,
+    });
   }
 
+  // Functions
   createCreateOneTimeScheduleFunction(props) {
     return this.createFunction({
       props,
       fileName: 'createOneTimeSchedule.js',
       logicalId: 'CreateOneTimeScheduleFunction',
     });
+  }
+  createExecuteOneTimeScheduleFunction(props) {
+    return this.createFunction({
+      props,
+      fileName: 'executeOneTimeSchedule.js',
+      logicalId: 'ExecuteOneTimeScheduleFunction',
+    });
+  }
+
+  // API Endpoints
+  createApiEndpoints({ api, functions }) {
+    api.addRoutes({
+      path: '/schedules/one-time',
+      methods: [HttpMethod.POST],
+      integration: new HttpLambdaIntegration(
+        'CreateOneTimeScheduleIntegration',
+        functions.createOneTimeScheduleFunction,
+      ),
+    });
+  }
+
+  // IAM Roles
+  createInvokeOneTimeScheduleRole(targetLambdaArn) {
+    const invokeOneTimeScheduleRole = new Role(this, 'InvokeOneTimeScheduleRole', {
+      assumedBy: new ServicePrincipal('scheduler.amazonaws.com'),
+    });
+    invokeOneTimeScheduleRole.addToPolicy(
+      new PolicyStatement({
+        actions: ['lambda:InvokeFunction'],
+        resources: [targetLambdaArn],
+      }),
+    );
+
+    return invokeOneTimeScheduleRole;
   }
 
   createFunction({ props, fileName, logicalId }) {
@@ -51,17 +102,6 @@ class SchedulerStack extends Stack {
     });
 
     return func;
-  }
-
-  createApiEndpoints({ api, functions }) {
-    api.addRoutes({
-      path: '/schedules/one-time',
-      methods: [HttpMethod.POST],
-      integration: new HttpLambdaIntegration(
-        'CreateOneTimeScheduleIntegration',
-        functions.createOneTimeScheduleFunction,
-      ),
-    });
   }
 }
 
