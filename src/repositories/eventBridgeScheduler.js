@@ -2,16 +2,16 @@ import { CreateScheduleCommand, CreateScheduleGroupCommand } from '@aws-sdk/clie
 import { Logger } from '@aws-lambda-powertools/logger';
 import { getSchedulerClient } from '../common/schedulerClient';
 import { createId } from '../common/utils';
+import { EVENTBRIDGE_SCHEDULER_GROUP_NAME, SERVICE_NAME } from '../common/constants';
 
-const APP_NAME = 'eventbridge-scheduler';
-const logger = new Logger({ serviceName: APP_NAME });
+const logger = new Logger({ serviceName: SERVICE_NAME });
 
 const createOneTimeSchedule = async ({ tenant, timestamp }) => {
   const client = getSchedulerClient();
-  await ensureScheduleGroup(APP_NAME);
+  await ensureScheduleGroup(EVENTBRIDGE_SCHEDULER_GROUP_NAME);
   const createScheduleCmd = new CreateScheduleCommand({
     Name: `TENANT_${tenant}_ONETIME_${createId()}`,
-    GroupName: createScheduleGroupName(APP_NAME),
+    GroupName: createScheduleGroupName(EVENTBRIDGE_SCHEDULER_GROUP_NAME),
     ScheduleExpression: `at(${isoTimeStampToTheSecond(timestamp)})`,
     Target: {
       Arn: process.env.ONE_TIME_SCHEDULE_TARGET_ARN,
@@ -24,7 +24,10 @@ const createOneTimeSchedule = async ({ tenant, timestamp }) => {
   const result = await client.send(createScheduleCmd);
   logger.debug('One-time schedule created', { tenant, timestamp, result });
 
-  return { name: createScheduleCmd.Name, group: createScheduleGroupName(tenant) };
+  return {
+    name: createScheduleCmd.Name,
+    group: createScheduleGroupName(EVENTBRIDGE_SCHEDULER_GROUP_NAME),
+  };
 };
 
 const ensureScheduleGroup = async (tenant) => {

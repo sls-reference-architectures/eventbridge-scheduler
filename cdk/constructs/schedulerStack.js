@@ -5,6 +5,7 @@ import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { ScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 
 class SchedulerStack extends Stack {
   constructor({ scope, id, props }) {
@@ -15,6 +16,10 @@ class SchedulerStack extends Stack {
       deployOptions: {
         stageName: props.stageName,
       },
+    });
+    // Scheduler Groups
+    new ScheduleGroup(this, 'SchedulerGroup', {
+      scheduleGroupName: props.serviceName,
     });
     // Functions
     const createOneTimeScheduleFunction = this.createCreateOneTimeScheduleFunction(props);

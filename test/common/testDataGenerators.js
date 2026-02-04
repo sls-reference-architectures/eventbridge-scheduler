@@ -6,6 +6,6 @@ const buildOneTimeScheduleInput = () => ({
   timestamp: faker.date.future().toISOString(),
 });
 
-const buildTestId = () => `TEST_${ulid()}`;
+const buildTestId = () => `TEST${ulid()}`;
 
 export { buildOneTimeScheduleInput, buildTestId };

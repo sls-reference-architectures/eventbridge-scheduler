@@ -1,8 +1,10 @@
 import cdk from 'aws-cdk-lib';
 import { SchedulerStack } from './constructs/schedulerStack.js';
+import { SERVICE_NAME } from '../src/common/constants.js';
 
 const app = new cdk.App();
 
+const serviceName = SERVICE_NAME;
 let stageName = app.node.tryGetContext('stageName');
 let stableStageName = app.node.tryGetContext('stableStageName');
 
@@ -15,8 +17,6 @@ if (!stableStageName) {
   console.log('Defaulting stable stage name to stageName');
   stableStageName = stageName;
 }
-
-const serviceName = 'eventbridge-scheduler';
 
 new SchedulerStack({
   scope: app,
