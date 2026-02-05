@@ -35,8 +35,8 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       - name: Deploy
         run: npx cdk deploy --require-approval never
-      # - name: Run INT tests
-      #   run: npm run test:int
+      - name: Run INT tests
+        run: npm run test:int
       # - name: Run E2E tests
       #   run: npm run test:e2e
       # The following is for my reference architecture stack only
