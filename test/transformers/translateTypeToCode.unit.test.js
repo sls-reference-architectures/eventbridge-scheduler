@@ -1,5 +1,5 @@
 import { ONE_TIME_SCHEDULE_CODE, ScheduleType } from '../../src/common/constants';
-import { getTypeCode } from '../../src/translators/scheduleTranslator';
+import { getTypeCode } from '../../src/transformers/scheduleTransformer';
 
 describe('When translating a schedule type to a code', () => {
   describe('of type one-time', () => {

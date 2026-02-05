@@ -1,5 +1,5 @@
 import { buildAwsSchedule } from '../common/testDataGenerators';
-import { transformFromAwsToDomain } from '../../src/translators/scheduleTranslator';
+import { transformFromAwsToDomain } from '../../src/transformers/scheduleTransformer';
 
 describe('When translating an AWS schedule to a domain schedule', () => {
   it('should return the expected domain schedule', () => {

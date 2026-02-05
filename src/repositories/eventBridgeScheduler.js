@@ -1,11 +1,16 @@
-import { CreateScheduleCommand, GetScheduleCommand } from '@aws-sdk/client-scheduler';
+import {
+  CreateScheduleCommand,
+  GetScheduleCommand,
+  ListSchedulesCommand,
+} from '@aws-sdk/client-scheduler';
 import { Logger } from '@aws-lambda-powertools/logger';
 import { NotFound } from 'http-errors';
 
 import { getSchedulerClient } from '../common/schedulerClient';
 import { createId } from '../common/utils';
 import { ONE_TIME_SCHEDULE_CODE, SERVICE_NAME } from '../common/constants';
-import { transformFromAwsToDomain } from '../translators/scheduleTranslator';
+import { transformFromAwsToDomain as transformScheduleFromAwsToDomain } from '../transformers/scheduleTransformer';
+import { transformFromAwsToDomain as transformScheduleSummaryFromAwsToDomain } from '../transformers/scheduleSummaryTransformer';
 
 const logger = new Logger({ serviceName: SERVICE_NAME });
 
@@ -42,7 +47,7 @@ const fetchScheduleById = async ({ id, tenant }) => {
       GroupName: SERVICE_NAME,
     });
     const awsSchedule = await client.send(getScheduleCmd);
-    const domainSchedule = transformFromAwsToDomain(awsSchedule);
+    const domainSchedule = transformScheduleFromAwsToDomain(awsSchedule);
 
     return domainSchedule;
   } catch (error) {
@@ -54,7 +59,21 @@ const fetchScheduleById = async ({ id, tenant }) => {
   }
 };
 
+const fetchAllSchedules = async ({ tenant }) => {
+  const client = getSchedulerClient();
+  const listSchedulesCmd = new ListSchedulesCommand({
+    GroupName: SERVICE_NAME,
+    NamePrefix: tenant,
+  });
+  const result = await client.send(listSchedulesCmd);
+  console.log(JSON.stringify(result, null, 2));
+
+  return {
+    results: result.Schedules.map(transformScheduleSummaryFromAwsToDomain),
+  };
+};
+
 const isoTimeStampToTheSecond = (iso8601Timestamp) => iso8601Timestamp.slice(0, 19);
 const createOneTimeScheduleName = ({ id, tenant }) => `${tenant}_${ONE_TIME_SCHEDULE_CODE}_${id}`;
 
-export { createOneTimeSchedule, fetchScheduleById };
+export { createOneTimeSchedule, fetchScheduleById, fetchAllSchedules };

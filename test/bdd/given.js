@@ -3,6 +3,7 @@ import { buildOneTimeScheduleInput, buildTestId } from '../common/testDataGenera
 
 const aOneTimeSchedule = async (tenant = buildTestId()) => {
   const oneTimeScheduleInput = buildOneTimeScheduleInput({ tenant });
+  console.log('Creating one-time schedule with input', { oneTimeScheduleInput });
   const { id } = await createOneTimeSchedule(oneTimeScheduleInput);
 
   return { id, ...oneTimeScheduleInput };

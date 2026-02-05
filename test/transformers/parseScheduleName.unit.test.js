@@ -1,5 +1,5 @@
 import { ScheduleType } from '../../src/common/constants';
-import { parseScheduleName } from '../../src/translators/scheduleTranslator';
+import { parseScheduleName } from '../../src/transformers/scheduleTransformer';
 import { buildTestId } from '../common/testDataGenerators';
 describe('When parsing a schedule name', () => {
   describe('of type one-time', () => {

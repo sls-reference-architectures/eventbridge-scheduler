@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { ulid } from 'ulid';
 import { ScheduleType, SERVICE_NAME } from '../../src/common/constants';
-import { getTypeCode } from '../../src/translators/scheduleTranslator';
+import { getTypeCode } from '../../src/transformers/scheduleTransformer';
 
 const buildExecutionInput = (overrideWith) => {
   const defaultExecutionInput = {
@@ -21,7 +21,7 @@ const buildExecutionInput = (overrideWith) => {
 const buildOneTimeScheduleInput = (overrideWith) => {
   const defaultInput = {
     tenant: buildTestId(),
-    executionTimestamp: faker.date.future().toISOString(),
+    executionTimestamp: faker.date.soon().toISOString(),
     executionInput: buildExecutionInput(),
   };
 
@@ -52,6 +52,26 @@ const buildAwsSchedule = ({
   return { awsSchedule, id, tenant, type, executionInput };
 };
 
+const buildAwsScheduleSummary = ({
+  id = buildTestId(),
+  tenant = buildTestId(),
+  type = faker.helpers.arrayElement(Object.values(ScheduleType)),
+} = {}) => {
+  const typeCode = getTypeCode(type);
+  const awsSchedule = {
+    Arn: faker.lorem.slug(),
+    GroupName: SERVICE_NAME,
+    Name: `${tenant}_${typeCode}_${id}`,
+    CreationDate: faker.date.past().toISOString(),
+    LastModificationDate: faker.date.recent().toISOString(),
+    Target: {
+      Arn: faker.lorem.slug(),
+    },
+  };
+
+  return { awsSchedule, id, tenant, type };
+};
+
 const buildTestId = () => `TEST${ulid()}`;
 
-export { buildOneTimeScheduleInput, buildTestId, buildAwsSchedule };
+export { buildOneTimeScheduleInput, buildTestId, buildAwsSchedule, buildAwsScheduleSummary };
