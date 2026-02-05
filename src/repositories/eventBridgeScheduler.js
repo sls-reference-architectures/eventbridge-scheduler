@@ -1,22 +1,24 @@
-import { CreateScheduleCommand } from '@aws-sdk/client-scheduler';
+import { CreateScheduleCommand, GetScheduleCommand } from '@aws-sdk/client-scheduler';
 import { Logger } from '@aws-lambda-powertools/logger';
+
 import { getSchedulerClient } from '../common/schedulerClient';
 import { createId } from '../common/utils';
 import { ONE_TIME_SCHEDULE_CODE, SERVICE_NAME } from '../common/constants';
+import { transformFromAwsToDomain } from '../translators/scheduleTranslator';
 
 const logger = new Logger({ serviceName: SERVICE_NAME });
 
-const createOneTimeSchedule = async ({ tenant, executionTimestamp }) => {
+const createOneTimeSchedule = async ({ tenant, executionTimestamp, executionInput }) => {
   const client = getSchedulerClient();
-  const name = createOneTimeScheduleName(tenant);
+  const id = createId();
   const createScheduleCmd = new CreateScheduleCommand({
-    Name: name,
+    Name: createOneTimeScheduleName({ tenant, id }),
     GroupName: SERVICE_NAME,
     ScheduleExpression: `at(${isoTimeStampToTheSecond(executionTimestamp)})`,
     Target: {
       Arn: process.env.ONE_TIME_SCHEDULE_TARGET_ARN,
       RoleArn: process.env.ONE_TIME_SCHEDULE_TARGET_ROLE_ARN,
-      Input: JSON.stringify({ tenant, executionTimestamp }),
+      Input: JSON.stringify(executionInput),
     },
     FlexibleTimeWindow: {
       Mode: 'OFF',
@@ -27,11 +29,23 @@ const createOneTimeSchedule = async ({ tenant, executionTimestamp }) => {
   logger.debug('One-time schedule created', { tenant, executionTimestamp, result });
 
   return {
-    name,
+    id,
   };
 };
 
-const isoTimeStampToTheSecond = (iso8601Timestamp) => iso8601Timestamp.slice(0, 19);
-const createOneTimeScheduleName = (tenant) => `${tenant}_${ONE_TIME_SCHEDULE_CODE}_${createId()}`;
+const fetchScheduleById = async ({ id, tenant }) => {
+  const client = getSchedulerClient();
+  const getScheduleCmd = new GetScheduleCommand({
+    Name: createOneTimeScheduleName({ tenant, id }),
+    GroupName: SERVICE_NAME,
+  });
+  const awsSchedule = await client.send(getScheduleCmd);
+  const domainSchedule = transformFromAwsToDomain(awsSchedule);
 
-export { createOneTimeSchedule };
+  return domainSchedule;
+};
+
+const isoTimeStampToTheSecond = (iso8601Timestamp) => iso8601Timestamp.slice(0, 19);
+const createOneTimeScheduleName = ({ id, tenant }) => `${tenant}_${ONE_TIME_SCHEDULE_CODE}_${id}`;
+
+export { createOneTimeSchedule, fetchScheduleById };

@@ -11,7 +11,7 @@ describe('When creating a one-time schedule', () => {
     const result = await createOneTimeSchedule(oneTimeScheduleInput);
 
     // ASSERT
-    expect(result).toHaveProperty('name');
-    expect(result.name).toBeString();
+    expect(result).toHaveProperty('id');
+    expect(result.id).toBeString();
   });
 });
