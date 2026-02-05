@@ -1,5 +1,6 @@
 import { CreateScheduleCommand, GetScheduleCommand } from '@aws-sdk/client-scheduler';
 import { Logger } from '@aws-lambda-powertools/logger';
+import { NotFound } from 'http-errors';
 
 import { getSchedulerClient } from '../common/schedulerClient';
 import { createId } from '../common/utils';
@@ -34,15 +35,23 @@ const createOneTimeSchedule = async ({ tenant, executionTimestamp, executionInpu
 };
 
 const fetchScheduleById = async ({ id, tenant }) => {
-  const client = getSchedulerClient();
-  const getScheduleCmd = new GetScheduleCommand({
-    Name: createOneTimeScheduleName({ tenant, id }),
-    GroupName: SERVICE_NAME,
-  });
-  const awsSchedule = await client.send(getScheduleCmd);
-  const domainSchedule = transformFromAwsToDomain(awsSchedule);
+  try {
+    const client = getSchedulerClient();
+    const getScheduleCmd = new GetScheduleCommand({
+      Name: createOneTimeScheduleName({ tenant, id }),
+      GroupName: SERVICE_NAME,
+    });
+    const awsSchedule = await client.send(getScheduleCmd);
+    const domainSchedule = transformFromAwsToDomain(awsSchedule);
 
-  return domainSchedule;
+    return domainSchedule;
+  } catch (error) {
+    logger.error('Error fetching schedule by ID', { id, tenant, error });
+    if (error.name === 'ResourceNotFoundException') {
+      throw new NotFound(`Not Found: No schedule found with id ${id} for tenant ${tenant}`);
+    }
+    throw error;
+  }
 };
 
 const isoTimeStampToTheSecond = (iso8601Timestamp) => iso8601Timestamp.slice(0, 19);

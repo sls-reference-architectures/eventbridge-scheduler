@@ -8,6 +8,6 @@ const aOneTimeSchedule = async (tenant = buildTestId()) => {
   return { id, ...oneTimeScheduleInput };
 };
 
-const aTenant = () => buildTestId();
+const anId = () => buildTestId();
 
-export { aOneTimeSchedule, aTenant };
+export { aOneTimeSchedule, anId };
