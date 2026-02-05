@@ -16,6 +16,7 @@ Fetch all my recurring schedules
 # Resources
 
 Coner Murphy: [Scheduling Events in AWS with the EventBridge Scheduler and AWS CDK](https://conermurphy.com/blog/aws-eventbridge-scheduler-cdk/)
+Pierre Chollet: [Learn serverless on AWS step-by-step - Schedule tasks with EventBridge Scheduler](https://dev.to/slsbytheodo/learn-serverless-on-aws-step-by-step-schedule-tasks-with-eventbridge-scheduler-4cbh)
 
 # Notes
 

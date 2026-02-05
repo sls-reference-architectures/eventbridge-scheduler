@@ -8,6 +8,9 @@ const region = process.env.AWS_REGION || 'us-east-1';
 const stage = process.env.STAGE || 'dev';
 
 const setup = async () => {
+  process.env.POWERTOOLS_LOG_LEVEL = 'DEBUG';
+  process.env.POWERTOOLS_LOGGER_SAMPLE_RATE = 1;
+  process.env.POWERTOOLS_DEV = true;
   process.env.AWS_REGION = region;
 
   const stackName = `eventbridge-scheduler-${stage}`;

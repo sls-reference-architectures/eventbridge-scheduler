@@ -6,6 +6,5 @@ const config = {
   testMatch: ['**/*.int.test.js'],
   testTimeout: 120000,
 };
-console.log(config);
 
 module.exports = config;

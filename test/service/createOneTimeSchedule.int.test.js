@@ -4,12 +4,14 @@ import { buildOneTimeScheduleInput } from '../common/testDataGenerators.js';
 describe('When creating a one-time schedule', () => {
   it('should return success', async () => {
     // ARRANGE
-    const oneTimeScheduleInput = buildOneTimeScheduleInput();
+    const now = new Date().toISOString();
+    const oneTimeScheduleInput = buildOneTimeScheduleInput({ executionTimestamp: now });
 
     // ACT
     const result = await createOneTimeSchedule(oneTimeScheduleInput);
 
     // ASSERT
-    expect(result).toBeDefined();
+    expect(result).toHaveProperty('name');
+    expect(result.name).toBeString();
   });
 });
