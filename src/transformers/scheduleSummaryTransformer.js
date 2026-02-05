@@ -45,7 +45,6 @@ const parseIdFromScheduleName = (scheduleName) => {
 };
 
 const transformFromAwsToDomain = (awsSchedule) => {
-  console.log('Transforming AWS schedule to domain schedule', { awsSchedule });
   const { id, tenant, type } = parseScheduleName(awsSchedule.Name);
   const domainSchedule = {
     created: awsSchedule.CreationDate,

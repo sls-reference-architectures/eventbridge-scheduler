@@ -15,4 +15,21 @@ describe('When fetching all schedules for a tenant', () => {
     expect(tenant1SchedulesResult.results).toHaveLength(1);
     expect(tenant1SchedulesResult.results[0].id).toEqual(schedule.id);
   });
+
+  describe('with paging', () => {
+    it('should respect the limit parameter', async () => {
+      // ARRANGE
+      const tenant = Given.anId();
+      await Given.aOneTimeSchedule(tenant);
+      await Given.aOneTimeSchedule(tenant);
+
+      // ACT
+      const schedulesResult = await fetchAllSchedules({ tenant, limit: 1 });
+
+      // ASSERT
+      expect(schedulesResult.results).toBeArray();
+      expect(schedulesResult.results).toHaveLength(1);
+      expect(schedulesResult.next).toBeString();
+    });
+  });
 });

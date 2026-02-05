@@ -8,7 +8,7 @@ import { NotFound } from 'http-errors';
 
 import { getSchedulerClient } from '../common/schedulerClient';
 import { createId } from '../common/utils';
-import { ONE_TIME_SCHEDULE_CODE, SERVICE_NAME } from '../common/constants';
+import { MAX_LIMIT, ONE_TIME_SCHEDULE_CODE, SERVICE_NAME } from '../common/constants';
 import { transformFromAwsToDomain as transformScheduleFromAwsToDomain } from '../transformers/scheduleTransformer';
 import { transformFromAwsToDomain as transformScheduleSummaryFromAwsToDomain } from '../transformers/scheduleSummaryTransformer';
 
@@ -59,16 +59,18 @@ const fetchScheduleById = async ({ id, tenant }) => {
   }
 };
 
-const fetchAllSchedules = async ({ tenant }) => {
+const fetchAllSchedules = async ({ limit = MAX_LIMIT, tenant }) => {
   const client = getSchedulerClient();
   const listSchedulesCmd = new ListSchedulesCommand({
     GroupName: SERVICE_NAME,
+    MaxResults: limit,
     NamePrefix: tenant,
   });
   const result = await client.send(listSchedulesCmd);
   console.log(JSON.stringify(result, null, 2));
 
   return {
+    next: result.NextToken,
     results: result.Schedules.map(transformScheduleSummaryFromAwsToDomain),
   };
 };
