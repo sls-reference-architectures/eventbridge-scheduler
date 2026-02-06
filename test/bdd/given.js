@@ -1,14 +1,27 @@
-import { createOneTimeSchedule } from '../../src/repositories/eventBridgeScheduler';
-import { buildOneTimeScheduleInput, buildTestId } from '../common/testDataGenerators';
+import {
+  createOneTimeSchedule,
+  createRateBasedSchedule,
+} from '../../src/repositories/eventBridgeScheduler';
+import {
+  buildOneTimeScheduleInput,
+  buildRateBasedScheduleInput,
+  buildTestId,
+} from '../common/testDataGenerators';
 
 const aOneTimeSchedule = async (tenant = buildTestId()) => {
   const oneTimeScheduleInput = buildOneTimeScheduleInput({ tenant });
-  console.log('Creating one-time schedule with input', { oneTimeScheduleInput });
   const { id } = await createOneTimeSchedule(oneTimeScheduleInput);
 
   return { id, ...oneTimeScheduleInput };
 };
 
+const aRateBasedSchedule = async (tenant = buildTestId()) => {
+  const rateBasedScheduleInput = buildRateBasedScheduleInput({ tenant });
+  const { id } = await createRateBasedSchedule(rateBasedScheduleInput);
+
+  return { id, ...rateBasedScheduleInput };
+};
+
 const anId = () => buildTestId();
 
-export { aOneTimeSchedule, anId };
+export { aOneTimeSchedule, aRateBasedSchedule, anId };

@@ -21,7 +21,7 @@ describe('When fetching all schedules for a tenant', () => {
       // ARRANGE
       const tenant = Given.anId();
       await Given.aOneTimeSchedule(tenant);
-      await Given.aOneTimeSchedule(tenant);
+      await Given.aRateBasedSchedule(tenant);
 
       // ACT
       const schedulesResult = await fetchAllSchedules({ tenant, limit: 1 });
