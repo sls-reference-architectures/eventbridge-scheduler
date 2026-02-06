@@ -26,3 +26,7 @@ Early on in development, when using aws-sdk in an int test, I get an error from 
 After much digging, I found another project that adds `transformIgnorePatterns: ['/node_modules/?!uuid'],` to its `jest.config.js` file. If I add this here, that error drops away. I do not know why. I have other projects w/o that `transformIgnorePatterns` entry that use `ulid` without the error. Something is still wonky.
 
 Answer to above question, the pattern is malformed. If I update the match to `node_modules/(?!(ulid))`, it does NOT fix the error. However, either leaving it empty (`node_modules/(?!())`) or putting in `@aws-sdk` (`node_modules/(?!(@aws-sdk))`) eliminates the error.
+
+## Scheduler Sorting
+
+AI claims that the `List` operation will return results sorted lexicographically by `Name`. I cannot find this in any of its sources, however. In practice, the results (for two items) seems indeterminate. Sometimes the names are sorted lexicographically. Sometimes not.

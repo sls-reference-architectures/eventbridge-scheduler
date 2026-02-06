@@ -59,15 +59,15 @@ const fetchScheduleById = async ({ id, tenant }) => {
   }
 };
 
-const fetchAllSchedules = async ({ limit = MAX_LIMIT, tenant }) => {
+const fetchAllSchedules = async ({ limit = MAX_LIMIT, next, tenant }) => {
   const client = getSchedulerClient();
   const listSchedulesCmd = new ListSchedulesCommand({
     GroupName: SERVICE_NAME,
     MaxResults: limit,
     NamePrefix: tenant,
+    NextToken: next,
   });
   const result = await client.send(listSchedulesCmd);
-  console.log(JSON.stringify(result, null, 2));
 
   return {
     next: result.NextToken,

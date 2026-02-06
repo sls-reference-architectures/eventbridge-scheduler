@@ -31,5 +31,31 @@ describe('When fetching all schedules for a tenant', () => {
       expect(schedulesResult.results).toHaveLength(1);
       expect(schedulesResult.next).toBeString();
     });
+
+    it('should return the next page of results when a next token is provided', async () => {
+      // ARRANGE
+      const tenant = Given.anId();
+      await Given.aOneTimeSchedule(tenant);
+      await Given.aOneTimeSchedule(tenant);
+
+      // ACT
+      const firstPageResult = await fetchAllSchedules({ tenant, limit: 1 });
+      const secondPageResult = await fetchAllSchedules({
+        tenant,
+        limit: 1,
+        next: firstPageResult.next,
+      });
+
+      // ASSERT
+      expect(firstPageResult.results).toBeArray();
+      expect(firstPageResult.results).toHaveLength(1);
+      expect(firstPageResult.next).toBeString();
+
+      expect(secondPageResult.results).toBeArray();
+      expect(secondPageResult.results).toHaveLength(1);
+      expect(secondPageResult.next).toBeUndefined();
+
+      expect(firstPageResult.results[0].id).not.toEqual(secondPageResult.results[0].id);
+    });
   });
 });
