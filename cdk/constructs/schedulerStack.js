@@ -94,6 +94,7 @@ class SchedulerStack extends Stack {
       bundling: {
         minify: true,
       },
+      architecture: 'ARM_64',
       runtime: Runtime.NODEJS_24_X,
       handler: 'handler',
       entry: `./src/handlers/${fileName}`,

@@ -31,6 +31,20 @@ const buildOneTimeScheduleInput = (overrideWith) => {
   };
 };
 
+const buildRateBasedScheduleInput = (overrideWith) => {
+  const defaultInput = {
+    tenant: buildTestId(),
+    rateValueUnit: '6 hours',
+    executionInput: buildExecutionInput(),
+    endDate: faker.date.soon().toISOString(),
+  };
+
+  return {
+    ...defaultInput,
+    ...overrideWith,
+  };
+};
+
 const buildAwsSchedule = ({
   id = buildTestId(),
   tenant = buildTestId(),
@@ -74,4 +88,10 @@ const buildAwsScheduleSummary = ({
 
 const buildTestId = () => `TEST${ulid()}`;
 
-export { buildOneTimeScheduleInput, buildTestId, buildAwsSchedule, buildAwsScheduleSummary };
+export {
+  buildOneTimeScheduleInput,
+  buildRateBasedScheduleInput,
+  buildTestId,
+  buildAwsSchedule,
+  buildAwsScheduleSummary,
+};

@@ -13,7 +13,7 @@ const setup = async () => {
   process.env.POWERTOOLS_DEV = true;
   process.env.AWS_REGION = region;
 
-  const stackName = `eventbridge-scheduler-${stage}`;
+  const stackName = `sls-ra-eventbridge-scheduler-${stage}`;
   const stack = await getStack(stackName);
   process.env.ONE_TIME_SCHEDULE_TARGET_ARN = getOneTimeScheduleTargetArn(stack);
   process.env.ONE_TIME_SCHEDULE_TARGET_ROLE_ARN = getInvokeOneTimeScheduleRoleArn(stack);
