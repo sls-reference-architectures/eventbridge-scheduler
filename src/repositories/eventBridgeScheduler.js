@@ -122,6 +122,22 @@ const fetchAllOneTimeSchedules = async ({ limit = MAX_LIMIT, next, tenant }) => 
   };
 };
 
+const fetchAllRateBasedSchedules = async ({ limit = MAX_LIMIT, next, tenant }) => {
+  const client = getSchedulerClient();
+  const listSchedulesCmd = new ListSchedulesCommand({
+    GroupName: SERVICE_NAME,
+    MaxResults: limit,
+    NamePrefix: `${tenant}_${RATE_BASED_SCHEDULE_CODE}_`,
+    NextToken: next,
+  });
+  const result = await client.send(listSchedulesCmd);
+
+  return {
+    next: result.NextToken,
+    results: result.Schedules.map(transformScheduleSummaryFromAwsToDomain),
+  };
+};
+
 const isoTimeStampToTheSecond = (iso8601Timestamp) => iso8601Timestamp.slice(0, 19);
 const createOneTimeScheduleName = ({ id, tenant }) => `${tenant}_${ONE_TIME_SCHEDULE_CODE}_${id}`;
 const createRateBasedScheduleName = ({ id, tenant }) =>
@@ -133,4 +149,5 @@ export {
   fetchScheduleById,
   fetchAllSchedules,
   fetchAllOneTimeSchedules,
+  fetchAllRateBasedSchedules,
 };
