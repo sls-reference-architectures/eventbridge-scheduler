@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { ulid } from 'ulid';
 import { ScheduleType, SERVICE_NAME } from '../../src/common/constants';
-import { getTypeCode } from '../../src/transformers/scheduleTransformer';
+import { getTypeCode } from '../../src/transformers/commonTransformers';
 
 const buildExecutionInput = (overrideWith) => {
   const defaultExecutionInput = {

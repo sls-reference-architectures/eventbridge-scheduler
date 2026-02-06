@@ -1,6 +1,7 @@
 import { ScheduleType } from '../../src/common/constants';
-import { parseScheduleName } from '../../src/transformers/scheduleTransformer';
+import { parseScheduleName } from '../../src/transformers/commonTransformers';
 import { buildTestId } from '../common/testDataGenerators';
+
 describe('When parsing a schedule name', () => {
   describe('of type one-time', () => {
     it('should return the correct type', () => {
@@ -12,6 +13,19 @@ describe('When parsing a schedule name', () => {
 
       // ASSERT
       expect(type).toEqual(ScheduleType.ONE_TIME);
+    });
+  });
+
+  describe('of type rate-based', () => {
+    it('should return the correct type', () => {
+      // ARRANGE
+      const rateBasedScheduleName = 'ABCDEF_RB_12345';
+
+      // ACT
+      const { type } = parseScheduleName(rateBasedScheduleName);
+
+      // ASSERT
+      expect(type).toEqual(ScheduleType.RATE_BASED);
     });
   });
 

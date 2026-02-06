@@ -1,5 +1,9 @@
-import { ONE_TIME_SCHEDULE_CODE, ScheduleType } from '../../src/common/constants';
-import { getTypeCode } from '../../src/transformers/scheduleTransformer';
+import {
+  ONE_TIME_SCHEDULE_CODE,
+  RATE_BASED_SCHEDULE_CODE,
+  ScheduleType,
+} from '../../src/common/constants';
+import { getTypeCode } from '../../src/transformers/commonTransformers';
 
 describe('When translating a schedule type to a code', () => {
   describe('of type one-time', () => {
@@ -12,6 +16,19 @@ describe('When translating a schedule type to a code', () => {
 
       // ASSERT
       expect(typeCode).toEqual(ONE_TIME_SCHEDULE_CODE);
+    });
+  });
+
+  describe('of type rate-based', () => {
+    it('should return the correct code', () => {
+      // ARRANGE
+      const scheduleType = ScheduleType.RATE_BASED;
+
+      // ACT
+      const typeCode = getTypeCode(scheduleType);
+
+      // ASSERT
+      expect(typeCode).toEqual(RATE_BASED_SCHEDULE_CODE);
     });
   });
 
