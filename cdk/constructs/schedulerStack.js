@@ -3,7 +3,7 @@ import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { ScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 
@@ -94,7 +94,7 @@ class SchedulerStack extends Stack {
       bundling: {
         minify: true,
       },
-      architecture: 'ARM_64',
+      architecture: Architecture.ARM_64,
       runtime: Runtime.NODEJS_24_X,
       handler: 'handler',
       entry: `./src/handlers/${fileName}`,
