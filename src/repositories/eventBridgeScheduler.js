@@ -8,7 +8,12 @@ import { NotFound } from 'http-errors';
 
 import { getSchedulerClient } from '../common/schedulerClient';
 import { createId } from '../common/utils';
-import { MAX_LIMIT, ONE_TIME_SCHEDULE_CODE, SERVICE_NAME } from '../common/constants';
+import {
+  MAX_LIMIT,
+  ONE_TIME_SCHEDULE_CODE,
+  RATE_BASED_SCHEDULE_CODE,
+  SERVICE_NAME,
+} from '../common/constants';
 import { transformFromAwsToDomain as transformScheduleFromAwsToDomain } from '../transformers/scheduleTransformer';
 import { transformFromAwsToDomain as transformScheduleSummaryFromAwsToDomain } from '../transformers/scheduleSummaryTransformer';
 
@@ -33,6 +38,32 @@ const createOneTimeSchedule = async ({ tenant, executionTimestamp, executionInpu
   });
   const result = await client.send(createScheduleCmd);
   logger.debug('One-time schedule created', { tenant, executionTimestamp, result });
+
+  return {
+    id,
+  };
+};
+
+const createRateBasedSchedule = async ({ tenant, rateValueUnit, executionInput, endDate }) => {
+  const client = getSchedulerClient();
+  const id = createId();
+  const createScheduleCmd = new CreateScheduleCommand({
+    Name: createRateBasedScheduleName({ tenant, id }),
+    GroupName: SERVICE_NAME,
+    ScheduleExpression: `rate(${rateValueUnit})`,
+    Target: {
+      Arn: process.env.RATE_BASED_SCHEDULE_TARGET_ARN,
+      RoleArn: process.env.RATE_BASED_SCHEDULE_TARGET_ROLE_ARN,
+      Input: JSON.stringify(executionInput),
+    },
+    FlexibleTimeWindow: {
+      Mode: 'OFF',
+    },
+    ActionAfterCompletion: 'DELETE',
+    EndDate: new Date(endDate),
+  });
+  const result = await client.send(createScheduleCmd);
+  logger.debug('Rate-based schedule created', { endDate, tenant, rateValueUnit, result });
 
   return {
     id,
@@ -77,5 +108,7 @@ const fetchAllSchedules = async ({ limit = MAX_LIMIT, next, tenant }) => {
 
 const isoTimeStampToTheSecond = (iso8601Timestamp) => iso8601Timestamp.slice(0, 19);
 const createOneTimeScheduleName = ({ id, tenant }) => `${tenant}_${ONE_TIME_SCHEDULE_CODE}_${id}`;
+const createRateBasedScheduleName = ({ id, tenant }) =>
+  `${tenant}_${RATE_BASED_SCHEDULE_CODE}_${id}`;
 
-export { createOneTimeSchedule, fetchScheduleById, fetchAllSchedules };
+export { createOneTimeSchedule, createRateBasedSchedule, fetchScheduleById, fetchAllSchedules };

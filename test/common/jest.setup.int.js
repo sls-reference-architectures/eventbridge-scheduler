@@ -1,6 +1,8 @@
 import {
   getInvokeOneTimeScheduleRoleArn,
+  getInvokeRateBasedScheduleRoleArn,
   getOneTimeScheduleTargetArn,
+  getRateBasedScheduleTargetArn,
   getStack,
 } from './setupUtils';
 
@@ -17,6 +19,8 @@ const setup = async () => {
   const stack = await getStack(stackName);
   process.env.ONE_TIME_SCHEDULE_TARGET_ARN = getOneTimeScheduleTargetArn(stack);
   process.env.ONE_TIME_SCHEDULE_TARGET_ROLE_ARN = getInvokeOneTimeScheduleRoleArn(stack);
+  process.env.RATE_BASED_SCHEDULE_TARGET_ARN = getRateBasedScheduleTargetArn(stack);
+  process.env.RATE_BASED_SCHEDULE_TARGET_ROLE_ARN = getInvokeRateBasedScheduleRoleArn(stack);
 };
 
 export default setup;

@@ -24,4 +24,17 @@ const getOneTimeScheduleTargetArn = (stack) =>
 const getInvokeOneTimeScheduleRoleArn = (stack) =>
   stack.Outputs?.find((o) => o.OutputKey === 'InvokeOneTimeScheduleRoleArn')?.OutputValue;
 
-export { getStack, getHttpApiUrl, getOneTimeScheduleTargetArn, getInvokeOneTimeScheduleRoleArn };
+const getRateBasedScheduleTargetArn = (stack) =>
+  stack.Outputs?.find((o) => o.OutputKey === 'ExecuteRateBasedScheduleFunctionArn')?.OutputValue;
+
+const getInvokeRateBasedScheduleRoleArn = (stack) =>
+  stack.Outputs?.find((o) => o.OutputKey === 'InvokeRateBasedScheduleRoleArn')?.OutputValue;
+
+export {
+  getStack,
+  getHttpApiUrl,
+  getOneTimeScheduleTargetArn,
+  getInvokeOneTimeScheduleRoleArn,
+  getRateBasedScheduleTargetArn,
+  getInvokeRateBasedScheduleRoleArn,
+};

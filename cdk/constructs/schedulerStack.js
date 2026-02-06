@@ -24,9 +24,13 @@ class SchedulerStack extends Stack {
     // Functions
     const createOneTimeScheduleFunction = this.createCreateOneTimeScheduleFunction(props);
     const executeOneTimeScheduleFunction = this.createExecuteOneTimeScheduleFunction(props);
+    const executeRateBasedScheduleFunction = this.createExecuteRateBasedScheduleFunction(props);
     // Roles
     const invokeOneTimeScheduleRole = this.createInvokeOneTimeScheduleRole(
       executeOneTimeScheduleFunction.functionArn,
+    );
+    const invokeRateBasedScheduleRole = this.createInvokeOneTimeScheduleRole(
+      executeRateBasedScheduleFunction.functionArn,
     );
     // Endpoints
     this.createApiEndpoints({ api, functions: { createOneTimeScheduleFunction } });
@@ -44,6 +48,14 @@ class SchedulerStack extends Stack {
       description: 'ARN of the InvokeOneTimeSchedule IAM Role',
       value: invokeOneTimeScheduleRole.roleArn,
     });
+    new CfnOutput(this, 'ExecuteRateBasedScheduleFunctionArn', {
+      description: 'ARN of the ExecuteRateBasedSchedule Lambda function',
+      value: executeRateBasedScheduleFunction.functionArn,
+    });
+    new CfnOutput(this, 'InvokeRateBasedScheduleRoleArn', {
+      description: 'ARN of the InvokeRateBasedSchedule IAM Role',
+      value: invokeRateBasedScheduleRole.roleArn,
+    });
   }
 
   // Functions
@@ -59,6 +71,13 @@ class SchedulerStack extends Stack {
       props,
       fileName: 'executeOneTimeSchedule.js',
       logicalId: 'ExecuteOneTimeScheduleFunction',
+    });
+  }
+  createRateBasedScheduleFunction(props) {
+    return this.createFunction({
+      props,
+      fileName: 'executeRateBasedSchedule.js',
+      logicalId: 'ExecuteRateBasedScheduleFunction',
     });
   }
 
