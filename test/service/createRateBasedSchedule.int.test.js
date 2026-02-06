@@ -1,7 +1,7 @@
 import { createRateBasedSchedule } from '../../src/repositories/eventBridgeScheduler.js';
 import { buildRateBasedScheduleInput } from '../common/testDataGenerators.js';
 
-describe.skip('When creating a rate-based schedule', () => {
+describe('When creating a rate-based schedule', () => {
   it('should return success', async () => {
     // ARRANGE
     const now = new Date().toISOString();
