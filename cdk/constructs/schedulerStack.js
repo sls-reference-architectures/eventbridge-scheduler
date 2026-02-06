@@ -29,7 +29,7 @@ class SchedulerStack extends Stack {
     const invokeOneTimeScheduleRole = this.createInvokeOneTimeScheduleRole(
       executeOneTimeScheduleFunction.functionArn,
     );
-    const invokeRateBasedScheduleRole = this.createInvokeOneTimeScheduleRole(
+    const invokeRateBasedScheduleRole = this.createInvokeRateBasedScheduleRole(
       executeRateBasedScheduleFunction.functionArn,
     );
     // Endpoints
@@ -73,7 +73,7 @@ class SchedulerStack extends Stack {
       logicalId: 'ExecuteOneTimeScheduleFunction',
     });
   }
-  createRateBasedScheduleFunction(props) {
+  createExecuteRateBasedScheduleFunction(props) {
     return this.createFunction({
       props,
       fileName: 'executeRateBasedSchedule.js',
@@ -106,6 +106,19 @@ class SchedulerStack extends Stack {
     );
 
     return invokeOneTimeScheduleRole;
+  }
+  createInvokeRateBasedScheduleRole(targetLambdaArn) {
+    const invokeRateBasedScheduleRole = new Role(this, 'InvokeRateBasedScheduleRole', {
+      assumedBy: new ServicePrincipal('scheduler.amazonaws.com'),
+    });
+    invokeRateBasedScheduleRole.addToPolicy(
+      new PolicyStatement({
+        actions: ['lambda:InvokeFunction'],
+        resources: [targetLambdaArn],
+      }),
+    );
+
+    return invokeRateBasedScheduleRole;
   }
 
   createFunction({ props, fileName, logicalId }) {
