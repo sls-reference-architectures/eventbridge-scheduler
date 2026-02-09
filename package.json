@@ -27,7 +27,7 @@
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
     "@faker-js/faker": "^9.9.0",
-    "@swc/core": "^1.15.8",
+    "@swc/core": "^1.15.11",
     "@swc/jest": "^0.2.39",
     "@types/aws-lambda": "^8.10.159",
     "@types/jest": "^30.0.0",
