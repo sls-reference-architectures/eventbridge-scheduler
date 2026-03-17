@@ -5,8 +5,6 @@ import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { Rule } from 'aws-cdk-lib/aws-events';
-import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { ScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 
 class SchedulerStack extends Stack {
@@ -27,11 +25,6 @@ class SchedulerStack extends Stack {
     const createOneTimeScheduleFunction = this.createCreateOneTimeScheduleFunction(props);
     const executeOneTimeScheduleFunction = this.createExecuteOneTimeScheduleFunction(props);
     const executeRateBasedScheduleFunction = this.createExecuteRateBasedScheduleFunction(props);
-    const logDefaultBusEventFunction = this.createLogDefaultBusEventFunction(props);
-    new Rule(this, 'LogDefaultBusEventRule', {
-      eventPattern: { source: ['aws.events'], detailType: ['Scheduled Event'] },
-      targets: [new LambdaFunction(logDefaultBusEventFunction)],
-    });
     // Roles
     const invokeOneTimeScheduleRole = this.createInvokeOneTimeScheduleRole(
       executeOneTimeScheduleFunction.functionArn,
@@ -87,14 +80,6 @@ class SchedulerStack extends Stack {
       logicalId: 'ExecuteRateBasedScheduleFunction',
     });
   }
-  createLogDefaultBusEventFunction(props) {
-    return this.createFunction({
-      props,
-      fileName: 'logDefaultBusEvent.js',
-      logicalId: 'LogDefaultBusEventFunction',
-    });
-  }
-
   // API Endpoints
   createApiEndpoints({ api, functions }) {
     api.addRoutes({
