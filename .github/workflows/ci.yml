@@ -37,6 +37,5 @@ jobs:
         run: npx cdk deploy --require-approval never
       - name: Run INT tests
         run: npm run test:int
-      # The following is for my reference architecture stack only
-      # - name: Remove stack from AWS
-      #   run: npx sls remove
+      - name: Tear down stack
+        run: npx cdk destroy --force
