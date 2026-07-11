@@ -1,0 +1,111 @@
+service: sls-ra-eventbridge-scheduler
+
+frameworkVersion: '4'
+
+configValidationMode: error
+
+custom:
+  esbuild:
+    minify: true
+  stage: ${opt:stage, self:provider.stage}
+  stableStage: ${opt:stableStage, self:custom.stage}
+  logLevel:
+    prod: INFO
+    default: DEBUG
+
+provider:
+  architecture: arm64
+  deploymentBucket:
+    name: com.reference-architecture.deploys
+    serverSideEncryption: AES256
+  environment:
+    POWERTOOLS_LOG_LEVEL: ${self:custom.logLevel.${self:custom.stage}, self:custom.logLevel.default}
+    SERVICE_NAME: ${self:service}
+    STAGE_NAME: ${self:custom.stage}
+    STABLE_STAGE_NAME: ${self:custom.stableStage}
+  logRetentionInDays: 7
+  memorySize: 1024
+  name: aws
+  runtime: nodejs24.x
+  stage: dev
+  tags:
+    lumigo:auto-trace: 'true'
+
+functions:
+  createOneTimeSchedule:
+    handler: src/handlers/createOneTimeSchedule.handler
+    events:
+      - httpApi:
+          path: /schedules/one-time
+          method: post
+          authorizer:
+            type: aws_iam
+
+  executeOneTimeSchedule:
+    handler: src/handlers/executeOneTimeSchedule.handler
+
+  executeRateBasedSchedule:
+    handler: src/handlers/executeRateBasedSchedule.handler
+
+resources:
+  Resources:
+    SchedulerGroup:
+      Type: AWS::Scheduler::ScheduleGroup
+      Properties:
+        Name: ${self:service}
+
+    InvokeOneTimeScheduleRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: scheduler.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: invoke-one-time-schedule
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action: lambda:InvokeFunction
+                  Resource: !GetAtt ExecuteOneTimeScheduleLambdaFunction.Arn
+
+    InvokeRateBasedScheduleRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: scheduler.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: invoke-rate-based-schedule
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action: lambda:InvokeFunction
+                  Resource: !GetAtt ExecuteRateBasedScheduleLambdaFunction.Arn
+
+  Outputs:
+    ExecuteOneTimeScheduleFunctionArn:
+      Description: ARN of the ExecuteOneTimeSchedule Lambda function
+      Value: !GetAtt ExecuteOneTimeScheduleLambdaFunction.Arn
+    InvokeOneTimeScheduleRoleArn:
+      Description: ARN of the InvokeOneTimeSchedule IAM Role
+      Value: !GetAtt InvokeOneTimeScheduleRole.Arn
+    ExecuteRateBasedScheduleFunctionArn:
+      Description: ARN of the ExecuteRateBasedSchedule Lambda function
+      Value: !GetAtt ExecuteRateBasedScheduleLambdaFunction.Arn
+    InvokeRateBasedScheduleRoleArn:
+      Description: ARN of the InvokeRateBasedSchedule IAM Role
+      Value: !GetAtt InvokeRateBasedScheduleRole.Arn
+
+plugins:
+  - serverless-esbuild
+  - serverless-deployment-bucket

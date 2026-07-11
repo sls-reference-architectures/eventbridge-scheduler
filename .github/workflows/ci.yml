@@ -34,8 +34,8 @@ jobs:
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       - name: Deploy
-        run: npx cdk deploy --require-approval never
+        run: npm run deploy
       - name: Run INT tests
         run: npm run test:int
       - name: Tear down stack
-        run: npx cdk destroy --force
+        run: npm run teardown
