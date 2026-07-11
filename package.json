@@ -44,7 +44,6 @@
     "lint-staged": "^16.2.7",
     "osls": "^4.0.0",
     "prettier": "^3.8.1",
-    "serverless-deployment-bucket": "^1.6.0",
     "serverless-esbuild": "^1.57.2"
   },
   "lint-staged": {

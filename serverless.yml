@@ -108,4 +108,3 @@ resources:
 
 plugins:
   - serverless-esbuild
-  - serverless-deployment-bucket
