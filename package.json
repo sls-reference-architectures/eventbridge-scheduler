@@ -51,7 +51,7 @@
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.34.0",
     "@aws-sdk/client-eventbridge": "^3.1101.0",
-    "@aws-sdk/client-scheduler": "^3.1106.0",
+    "@aws-sdk/client-scheduler": "^3.1108.0",
     "@middy/core": "^7.7.2",
     "http-errors": "^2.0.1",
     "ulid": "^3.0.2"
