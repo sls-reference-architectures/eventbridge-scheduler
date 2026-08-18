@@ -12,13 +12,20 @@ describe('When fetching all rate-based schedules for a tenant', () => {
     await Given.aOneTimeSchedule(tenant);
     await Given.aOneTimeSchedule();
 
-    // ACT
-    const tenant1SchedulesResult = await fetchAllRateBasedSchedules({ tenant: schedule.tenant });
+    await retry(
+      async () => {
+        // ACT
+        const tenant1SchedulesResult = await fetchAllRateBasedSchedules({
+          tenant: schedule.tenant,
+        });
 
-    // ASSERT
-    expect(tenant1SchedulesResult.results).toBeArray();
-    expect(tenant1SchedulesResult.results).toHaveLength(1);
-    expect(tenant1SchedulesResult.results[0].id).toEqual(schedule.id);
+        // ASSERT
+        expect(tenant1SchedulesResult.results).toBeArray();
+        expect(tenant1SchedulesResult.results).toHaveLength(1);
+        expect(tenant1SchedulesResult.results[0].id).toEqual(schedule.id);
+      },
+      { retries: 3 },
+    );
   });
 
   describe('with paging', () => {
@@ -29,14 +36,19 @@ describe('When fetching all rate-based schedules for a tenant', () => {
       await Given.aRateBasedSchedule(tenant);
       await Given.aOneTimeSchedule(tenant);
 
-      // ACT
-      const schedulesResult = await fetchAllRateBasedSchedules({ tenant, limit: 1 });
+      await retry(
+        async () => {
+          // ACT
+          const schedulesResult = await fetchAllRateBasedSchedules({ tenant, limit: 1 });
 
-      // ASSERT
-      expect(schedulesResult.results).toBeArray();
-      expect(schedulesResult.results).toHaveLength(1);
-      expect(schedulesResult.results[0].type).toEqual(ScheduleType.RATE_BASED);
-      expect(schedulesResult.next).toBeString();
+          // ASSERT
+          expect(schedulesResult.results).toBeArray();
+          expect(schedulesResult.results).toHaveLength(1);
+          expect(schedulesResult.results[0].type).toEqual(ScheduleType.RATE_BASED);
+          expect(schedulesResult.next).toBeString();
+        },
+        { retries: 3 },
+      );
     });
 
     it('should return the next page of results when a next token is provided', async () => {

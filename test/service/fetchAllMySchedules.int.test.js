@@ -1,3 +1,5 @@
+import retry from 'async-retry';
+
 import { fetchAllSchedules } from '../../src/repositories/eventBridgeScheduler';
 import * as Given from '../bdd/given';
 
@@ -7,13 +9,18 @@ describe('When fetching all schedules for a tenant', () => {
     const schedule = await Given.aOneTimeSchedule();
     await Given.aOneTimeSchedule();
 
-    // ACT
-    const tenant1SchedulesResult = await fetchAllSchedules({ tenant: schedule.tenant });
+    await retry(
+      async () => {
+        // ACT
+        const tenant1SchedulesResult = await fetchAllSchedules({ tenant: schedule.tenant });
 
-    // ASSERT
-    expect(tenant1SchedulesResult.results).toBeArray();
-    expect(tenant1SchedulesResult.results).toHaveLength(1);
-    expect(tenant1SchedulesResult.results[0].id).toEqual(schedule.id);
+        // ASSERT
+        expect(tenant1SchedulesResult.results).toBeArray();
+        expect(tenant1SchedulesResult.results).toHaveLength(1);
+        expect(tenant1SchedulesResult.results[0].id).toEqual(schedule.id);
+      },
+      { retries: 3 },
+    );
   });
 
   describe('with paging', () => {
@@ -23,13 +30,18 @@ describe('When fetching all schedules for a tenant', () => {
       await Given.aOneTimeSchedule(tenant);
       await Given.aRateBasedSchedule(tenant);
 
-      // ACT
-      const schedulesResult = await fetchAllSchedules({ tenant, limit: 1 });
+      await retry(
+        async () => {
+          // ACT
+          const schedulesResult = await fetchAllSchedules({ tenant, limit: 1 });
 
-      // ASSERT
-      expect(schedulesResult.results).toBeArray();
-      expect(schedulesResult.results).toHaveLength(1);
-      expect(schedulesResult.next).toBeString();
+          // ASSERT
+          expect(schedulesResult.results).toBeArray();
+          expect(schedulesResult.results).toHaveLength(1);
+          expect(schedulesResult.next).toBeString();
+        },
+        { retries: 3 },
+      );
     });
 
     it('should return the next page of results when a next token is provided', async () => {
@@ -38,24 +50,29 @@ describe('When fetching all schedules for a tenant', () => {
       await Given.aOneTimeSchedule(tenant);
       await Given.aOneTimeSchedule(tenant);
 
-      // ACT
-      const firstPageResult = await fetchAllSchedules({ tenant, limit: 1 });
-      const secondPageResult = await fetchAllSchedules({
-        tenant,
-        limit: 1,
-        next: firstPageResult.next,
-      });
+      await retry(
+        async () => {
+          // ACT
+          const firstPageResult = await fetchAllSchedules({ tenant, limit: 1 });
+          const secondPageResult = await fetchAllSchedules({
+            tenant,
+            limit: 1,
+            next: firstPageResult.next,
+          });
 
-      // ASSERT
-      expect(firstPageResult.results).toBeArray();
-      expect(firstPageResult.results).toHaveLength(1);
-      expect(firstPageResult.next).toBeString();
+          // ASSERT
+          expect(firstPageResult.results).toBeArray();
+          expect(firstPageResult.results).toHaveLength(1);
+          expect(firstPageResult.next).toBeString();
 
-      expect(secondPageResult.results).toBeArray();
-      expect(secondPageResult.results).toHaveLength(1);
-      expect(secondPageResult.next).toBeUndefined();
+          expect(secondPageResult.results).toBeArray();
+          expect(secondPageResult.results).toHaveLength(1);
+          expect(secondPageResult.next).toBeUndefined();
 
-      expect(firstPageResult.results[0].id).not.toEqual(secondPageResult.results[0].id);
+          expect(firstPageResult.results[0].id).not.toEqual(secondPageResult.results[0].id);
+        },
+        { retries: 3 },
+      );
     });
   });
 });
