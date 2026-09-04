@@ -5,5 +5,5 @@ module.exports = {
   transform: {
     '^.+\\.jsx?$': '@swc/jest',
   },
-  transformIgnorePatterns: ['/node_modules/(?!(@aws-sdk))'],
+  transformIgnorePatterns: ['/node_modules/(?!(@aws-sdk|@faker-js/faker))'],
 };
