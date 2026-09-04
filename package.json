@@ -48,7 +48,7 @@
     "*.{js,md,mjs,yml,json}": "npx prettier . --write --ignore-path .gitignore"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.34.0",
+    "@aws-lambda-powertools/logger": "^2.35.0",
     "@aws-sdk/client-scheduler": "^3.1113.0",
     "@middy/core": "^7.7.2",
     "http-errors": "^2.0.1",
