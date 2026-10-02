@@ -50,7 +50,7 @@
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.35.0",
     "@aws-sdk/client-scheduler": "^3.1141.0",
-    "@middy/core": "^7.7.2",
+    "@middy/core": "^7.9.2",
     "http-errors": "^2.0.1",
     "ulid": "^3.0.2"
   }
