@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/sls-reference-architectures/eventbridge-scheduler#readme",
   "devDependencies": {
-    "@aws-sdk/client-cloudformation": "^3.1141.0",
+    "@aws-sdk/client-cloudformation": "^3.1145.0",
     "@eslint/js": "^10.0.1",
     "@faker-js/faker": "^10.6.0",
     "@swc/core": "^1.16.2",
@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.35.0",
-    "@aws-sdk/client-scheduler": "^3.1141.0",
+    "@aws-sdk/client-scheduler": "^3.1145.0",
     "@middy/core": "^7.9.2",
     "http-errors": "^2.0.1",
     "ulid": "^3.0.2"
